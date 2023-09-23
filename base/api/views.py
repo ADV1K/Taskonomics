@@ -1,7 +1,9 @@
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+
+from .serializers import MyTokenObtainPairSerializer, SignupSerializer
 
 
 @api_view(["GET"])
@@ -9,18 +11,23 @@ def hello(request):
     return Response({"message": "Hello, world!"})
 
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-
-        # Add custom claims
-        print(user.first_name, user.email)
-        token["name"] = user.first_name
-        token["email"] = user.email
-
-        return token
-
-
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+@api_view(["POST"])
+def signup(request):
+    serializer = SignupSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        if user:
+            return Response(
+                {
+                    "user": SignupSerializer(user, context=serializer.data).data,
+                    "message": "User created successfully",
+                }
+            )
+    return Response(
+        {"message": "User not created", "errors": serializer.errors},
+        status=status.HTTP_400_BAD_REQUEST,
+    )
