@@ -48,7 +48,8 @@ class SignupView(APIView):
                     {
                         "message": "User created successfully",
                         "user": UserSerializer(user, context=serializer.data).data,
-                    }
+                    },
+                    status=status.HTTP_201_CREATED,
                 )
         return Response(
             {"message": "User not created", "errors": serializer.errors},

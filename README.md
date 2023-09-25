@@ -9,6 +9,9 @@ poetry shell
 # Install dependencies
 poetry install
 
+# Run Tests
+python manage.py test
+
 # Run migrations
 python manage.py migrate
 

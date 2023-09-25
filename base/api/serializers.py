@@ -56,6 +56,12 @@ class TaskSerializer(serializers.Serializer):
         task.reviewers.add(*(r.id for r in reviewers))
         return task
 
+    def update(self, instance, validated_data):
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+        return instance
+
     def validate_project(self, value):
         if value.owner != self.context["request"].user:
             raise serializers.ValidationError("You are not the owner of this project")
@@ -71,3 +77,9 @@ class ProjectSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return Project.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        instance.save()
+        return instance
